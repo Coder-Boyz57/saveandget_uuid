@@ -105,4 +105,4 @@ def save_user():
         return jsonify({"error": f"Failed to save data: {e}"})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host="0.0.0.0")
