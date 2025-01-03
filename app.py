@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 import sqlite3
 from sqlite3 import Error
+import time
 
 app = Flask(__name__)
 
@@ -9,7 +10,7 @@ DATABASE = 'aiytm_data.db'
 
 # Function to create a database connection
 def get_db_connection():
-    conn = sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE, check_same_thread=False)  # Allow multi-threaded access
     conn.row_factory = sqlite3.Row  # This allows us to access columns by name
     return conn
 
@@ -23,7 +24,8 @@ def init_db():
             name TEXT NOT NULL,
             email TEXT NOT NULL,
             niche TEXT NOT NULL,
-            country TEXT NOT NULL
+            country TEXT NOT NULL,
+            UNIQUE(email)
         )
     """)
     conn.commit()
@@ -95,8 +97,13 @@ def save_user():
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO users (id, name, email, niche, country) VALUES (?, ?, ?, ?, ?)", 
-                       (user_id, name, email, niche, country))
+
+        # Try to insert or replace the user data
+        cursor.execute("""
+            INSERT OR REPLACE INTO users (id, name, email, niche, country)
+            VALUES (?, ?, ?, ?, ?)
+        """, (user_id, name, email, niche, country))
+        
         conn.commit()
         conn.close()
 
