@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, render_template, request, jsonify
 import firebase_admin
 from firebase_admin import credentials, firestore
 import json
@@ -50,17 +50,16 @@ def index():
         # If there's a search query, filter users by name, email, niche, or country
         if search_query:
             query = users_ref.where('name', '>=', search_query).where('name', '<=', search_query + '\uf8ff') \
-                              .limit(10)
+                              .limit(10)  # You can adjust the limit as needed
             results = query.stream()
         else:
             results = users_ref.stream()
 
         users = [user.to_dict() for user in results]
 
-        return jsonify({"users": users, "search_query": search_query})
+        return render_template('index.html', users=users, search_query=search_query)
     except Exception as e:
-        return jsonify({"error": f"Error: {e}"})
-
+        return f"Error: {e}"
 
 @app.route('/get_user')
 def get_user():
@@ -79,7 +78,6 @@ def get_user():
             return jsonify({"error": "User not found."})
     except Exception as e:
         return jsonify({"error": f"Failed to retrieve data: {e}"})
-
 
 @app.route('/save_user', methods=['POST'])
 def save_user():
@@ -108,7 +106,6 @@ def save_user():
         return jsonify({"id": user_id})
     except Exception as e:
         return jsonify({"error": f"Failed to save data: {e}"})
-
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0")
