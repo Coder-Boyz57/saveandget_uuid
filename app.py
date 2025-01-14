@@ -6,10 +6,10 @@ app = Flask(__name__)
 
 # MySQL database configuration
 DB_CONFIG = {
-    "host": "sql205.infinityfree.com",
-    "user": "if0_38097969",
-    "password": "T0UaXaM3GMFeH",
-    "database": "if0_38097969_aiytm",
+    "host": "sql12.freemysqlhosting.net",
+    "user": "sql12757468",
+    "password": "BEuEui8xdf",
+    "database": "sql12757468",
     "port": 3306
 }
 
